@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/MarkerCluster.css">
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Shelby WebMap</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet.markercluster.js"></script>
+        <script src="data/DemographyCENSUSdataby_trackts_3.js"></script>
+        <script src="data/USCountry_4.js"></script>
+        <script src="data/SchoolLocationsShalbyCountry_5.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:18, minZoom:12
+        }).fitBounds([[34.93102305653658,-90.27940027843464],[35.36370968560202,-89.46577726929331]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'feet',
+            secondaryLengthUnit: 'miles',
+            primaryAreaUnit: 'sqfeet',
+            secondaryAreaUnit: 'sqmiles'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleSattelite_0');
+        map.getPane('pane_GoogleSattelite_0').style.zIndex = 400;
+        var layer_GoogleSattelite_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSattelite_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 12,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_GoogleSattelite_0;
+        map.addLayer(layer_GoogleSattelite_0);
+        map.createPane('pane_GoogleHybrid_1');
+        map.getPane('pane_GoogleHybrid_1').style.zIndex = 401;
+        var layer_GoogleHybrid_1 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleHybrid_1',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 12,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_GoogleHybrid_1;
+        map.addLayer(layer_GoogleHybrid_1);
+        map.createPane('pane_GoogleRoatmap_2');
+        map.getPane('pane_GoogleRoatmap_2').style.zIndex = 402;
+        var layer_GoogleRoatmap_2 = L.tileLayer('http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleRoatmap_2',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 12,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_GoogleRoatmap_2;
+        map.addLayer(layer_GoogleRoatmap_2);
+        function pop_DemographyCENSUSdataby_trackts_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">fid</th>\
+                        <td>' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">STATEFP</th>\
+                        <td>' + (feature.properties['STATEFP'] !== null ? autolinker.link(feature.properties['STATEFP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">COUNTYFP</th>\
+                        <td>' + (feature.properties['COUNTYFP'] !== null ? autolinker.link(feature.properties['COUNTYFP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TRACTCE</th>\
+                        <td>' + (feature.properties['TRACTCE'] !== null ? autolinker.link(feature.properties['TRACTCE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">GEOID</th>\
+                        <td>' + (feature.properties['GEOID'] !== null ? autolinker.link(feature.properties['GEOID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NAME</th>\
+                        <td>' + (feature.properties['NAME'] !== null ? autolinker.link(feature.properties['NAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NAMELSAD</th>\
+                        <td>' + (feature.properties['NAMELSAD'] !== null ? autolinker.link(feature.properties['NAMELSAD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MTFCC</th>\
+                        <td>' + (feature.properties['MTFCC'] !== null ? autolinker.link(feature.properties['MTFCC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FUNCSTAT</th>\
+                        <td>' + (feature.properties['FUNCSTAT'] !== null ? autolinker.link(feature.properties['FUNCSTAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ALAND</th>\
+                        <td>' + (feature.properties['ALAND'] !== null ? autolinker.link(feature.properties['ALAND'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">AWATER</th>\
+                        <td>' + (feature.properties['AWATER'] !== null ? autolinker.link(feature.properties['AWATER'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INTPTLAT</th>\
+                        <td>' + (feature.properties['INTPTLAT'] !== null ? autolinker.link(feature.properties['INTPTLAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">INTPTLON</th>\
+                        <td>' + (feature.properties['INTPTLON'] !== null ? autolinker.link(feature.properties['INTPTLON'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SUMLEV</th>\
+                        <td>' + (feature.properties['SUMLEV'] !== null ? autolinker.link(feature.properties['SUMLEV'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LOGRECNO</th>\
+                        <td>' + (feature.properties['LOGRECNO'] !== null ? autolinker.link(feature.properties['LOGRECNO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Total population Total</th>\
+                        <td>' + (feature.properties['Total population Total'] !== null ? autolinker.link(feature.properties['Total population Total'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Population of one race</th>\
+                        <td>' + (feature.properties['Population of one race'] !== null ? autolinker.link(feature.properties['Population of one race'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">White alone</th>\
+                        <td>' + (feature.properties['White alone'] !== null ? autolinker.link(feature.properties['White alone'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Black or African American alone</th>\
+                        <td>' + (feature.properties['Black or African American alone'] !== null ? autolinker.link(feature.properties['Black or African American alone'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">American Indian and Alaska Native alone</th>\
+                        <td>' + (feature.properties['American Indian and Alaska Native alone'] !== null ? autolinker.link(feature.properties['American Indian and Alaska Native alone'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Asian alone</th>\
+                        <td>' + (feature.properties['Asian alone'] !== null ? autolinker.link(feature.properties['Asian alone'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Native Hawaiian and Other Pacific Islander alone</th>\
+                        <td>' + (feature.properties['Native Hawaiian and Other Pacific Islander alone'] !== null ? autolinker.link(feature.properties['Native Hawaiian and Other Pacific Islander alone'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Some other race alone</th>\
+                        <td>' + (feature.properties['Some other race alone'] !== null ? autolinker.link(feature.properties['Some other race alone'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Total population 18 years and over Total</th>\
+                        <td>' + (feature.properties['Total population 18 years and over Total'] !== null ? autolinker.link(feature.properties['Total population 18 years and over Total'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Housing units - Total</th>\
+                        <td>' + (feature.properties['Housing units - Total'] !== null ? autolinker.link(feature.properties['Housing units - Total'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Housing units - Occupied</th>\
+                        <td>' + (feature.properties['Housing units - Occupied'] !== null ? autolinker.link(feature.properties['Housing units - Occupied'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Housing units - Vacant</th>\
+                        <td>' + (feature.properties['Housing units - Vacant'] !== null ? autolinker.link(feature.properties['Housing units - Vacant'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area_sqr_mile</th>\
+                        <td>' + (feature.properties['Area_sqr_mile'] !== null ? autolinker.link(feature.properties['Area_sqr_mile'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Density Total Population</th>\
+                        <td>' + (feature.properties['Density Total Population'] !== null ? autolinker.link(feature.properties['Density Total Population'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Density_class</th>\
+                        <td>' + (feature.properties['Density_class'] !== null ? autolinker.link(feature.properties['Density_class'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_DemographyCENSUSdataby_trackts_3_0(feature) {
+            if (feature.properties['Density Total Population'] >= 0.000000 && feature.properties['Density Total Population'] <= 1000.000000 ) {
+                return {
+                pane: 'pane_DemographyCENSUSdataby_trackts_3',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,163,117,0.1411764705882353)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Density Total Population'] >= 1000.000000 && feature.properties['Density Total Population'] <= 5000.000000 ) {
+                return {
+                pane: 'pane_DemographyCENSUSdataby_trackts_3',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,164,134,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Density Total Population'] >= 5000.000000 && feature.properties['Density Total Population'] <= 10000.000000 ) {
+                return {
+                pane: 'pane_DemographyCENSUSdataby_trackts_3',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(234,55,42,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Density Total Population'] >= 10000.000000 && feature.properties['Density Total Population'] <= 20000.000000 ) {
+                return {
+                pane: 'pane_DemographyCENSUSdataby_trackts_3',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(103,0,13,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_DemographyCENSUSdataby_trackts_3');
+        map.getPane('pane_DemographyCENSUSdataby_trackts_3').style.zIndex = 403;
+        map.getPane('pane_DemographyCENSUSdataby_trackts_3').style['mix-blend-mode'] = 'normal';
+        var layer_DemographyCENSUSdataby_trackts_3 = new L.geoJson(json_DemographyCENSUSdataby_trackts_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DemographyCENSUSdataby_trackts_3',
+            layerName: 'layer_DemographyCENSUSdataby_trackts_3',
+            pane: 'pane_DemographyCENSUSdataby_trackts_3',
+            onEachFeature: pop_DemographyCENSUSdataby_trackts_3,
+            style: style_DemographyCENSUSdataby_trackts_3_0,
+        });
+        bounds_group.addLayer(layer_DemographyCENSUSdataby_trackts_3);
+        map.addLayer(layer_DemographyCENSUSdataby_trackts_3);
+        function pop_USCountry_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STATEFP'] !== null ? autolinker.link(feature.properties['STATEFP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['COUNTYFP'] !== null ? autolinker.link(feature.properties['COUNTYFP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['COUNTYNS'] !== null ? autolinker.link(feature.properties['COUNTYNS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AFFGEOID'] !== null ? autolinker.link(feature.properties['AFFGEOID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['GEOID'] !== null ? autolinker.link(feature.properties['GEOID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['NAME'] !== null ? autolinker.link(feature.properties['NAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LSAD'] !== null ? autolinker.link(feature.properties['LSAD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ALAND'] !== null ? autolinker.link(feature.properties['ALAND'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AWATER'] !== null ? autolinker.link(feature.properties['AWATER'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+        function style_USCountry_4_0(feature) {
+            var context = {
+                feature: feature,
+                variables: {}
+            };
+            // Start of if blocks and style check logic
+            if (exp_USCountry_4rule1_eval_expression(context)) {
+                  return {
+                pane: 'pane_USCountry_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(232,113,141,0.0)',
+                interactive: false,
+            };
+                }
+            else {
+                return {
+                pane: 'pane_USCountry_4',
+                opacity: 1,
+                color: 'rgba(242,240,237,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(206,191,197,0.592156862745098)',
+                interactive: false,
+            };
+            }
+        }
+        map.createPane('pane_USCountry_4');
+        map.getPane('pane_USCountry_4').style.zIndex = 404;
+        map.getPane('pane_USCountry_4').style['mix-blend-mode'] = 'normal';
+        var layer_USCountry_4 = new L.geoJson(json_USCountry_4, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_USCountry_4',
+            layerName: 'layer_USCountry_4',
+            pane: 'pane_USCountry_4',
+            onEachFeature: pop_USCountry_4,
+            style: style_USCountry_4_0,
+        });
+        bounds_group.addLayer(layer_USCountry_4);
+        map.addLayer(layer_USCountry_4);
+        function pop_SchoolLocationsShalbyCountry_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">id</th>\
+                        <td>' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Name</th>\
+                        <td>' + (feature.properties['Name'] !== null ? autolinker.link(feature.properties['Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Type</th>\
+                        <td>' + (feature.properties['Type'] !== null ? autolinker.link(feature.properties['Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Subtypes</th>\
+                        <td>' + (feature.properties['Subtypes'] !== null ? autolinker.link(feature.properties['Subtypes'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Category</th>\
+                        <td>' + (feature.properties['Category'] !== null ? autolinker.link(feature.properties['Category'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Full_Address</th>\
+                        <td>' + (feature.properties['Full_Address'] !== null ? autolinker.link(feature.properties['Full_Address'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Street</th>\
+                        <td>' + (feature.properties['Street'] !== null ? autolinker.link(feature.properties['Street'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">City</th>\
+                        <td>' + (feature.properties['City'] !== null ? autolinker.link(feature.properties['City'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Postal_Code</th>\
+                        <td>' + (feature.properties['Postal_Code'] !== null ? autolinker.link(feature.properties['Postal_Code'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Site</th>\
+                        <td>' + (feature.properties['Site'] !== null ? autolinker.link(feature.properties['Site'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Google Rating</th>\
+                        <td>' + (feature.properties['Google Rating'] !== null ? autolinker.link(feature.properties['Google Rating'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Reviews</th>\
+                        <td>' + (feature.properties['Reviews'] !== null ? autolinker.link(feature.properties['Reviews'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Reviews_Link</th>\
+                        <td>' + (feature.properties['Reviews_Link'] !== null ? autolinker.link(feature.properties['Reviews_Link'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Photo</th>\
+                        <td>' + (feature.properties['Photo'] !== null ? autolinker.link(feature.properties['Photo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_SchoolLocationsShalbyCountry_5_0() {
+            return {
+                pane: 'pane_SchoolLocationsShalbyCountry_5',
+                radius: 8.0,
+                opacity: 1,
+                color: 'rgba(32,32,32,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(242,240,237,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_SchoolLocationsShalbyCountry_5');
+        map.getPane('pane_SchoolLocationsShalbyCountry_5').style.zIndex = 405;
+        map.getPane('pane_SchoolLocationsShalbyCountry_5').style['mix-blend-mode'] = 'normal';
+        var layer_SchoolLocationsShalbyCountry_5 = new L.geoJson(json_SchoolLocationsShalbyCountry_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_SchoolLocationsShalbyCountry_5',
+            layerName: 'layer_SchoolLocationsShalbyCountry_5',
+            pane: 'pane_SchoolLocationsShalbyCountry_5',
+            onEachFeature: pop_SchoolLocationsShalbyCountry_5,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_SchoolLocationsShalbyCountry_5_0(feature));
+            },
+        });
+        var cluster_SchoolLocationsShalbyCountry_5 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_SchoolLocationsShalbyCountry_5.addLayer(layer_SchoolLocationsShalbyCountry_5);
+
+        bounds_group.addLayer(layer_SchoolLocationsShalbyCountry_5);
+        cluster_SchoolLocationsShalbyCountry_5.addTo(map);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Shelby WebMap</h2>';
+            };
+            title.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/SchoolLocationsShalbyCountry_5.png" /> School Locations - Shalby Country': cluster_SchoolLocationsShalbyCountry_5,'US - Country<br /><table><tr><td style="text-align: center;"><img src="legend/USCountry_4_0.png" /></td><td></td></tr><tr><td style="text-align: center;"><img src="legend/USCountry_4_1.png" /></td><td></td></tr></table>': layer_USCountry_4,'Demography - CENSUS data by_trackts<br /><table><tr><td style="text-align: center;"><img src="legend/DemographyCENSUSdataby_trackts_3_05000Peoplepermile0.png" /></td><td>0 - 5,000 - People per mile</td></tr><tr><td style="text-align: center;"><img src="legend/DemographyCENSUSdataby_trackts_3_500010000Peoplepermile1.png" /></td><td>5,000 - 10,000 - People per mile</td></tr><tr><td style="text-align: center;"><img src="legend/DemographyCENSUSdataby_trackts_3_1000015000Peoplepermile2.png" /></td><td>10,000 - 15,000 - People per mile</td></tr><tr><td style="text-align: center;"><img src="legend/DemographyCENSUSdataby_trackts_3_1500020000Peoplepermile3.png" /></td><td>15,000 - 20,000 - People per mile</td></tr></table>': layer_DemographyCENSUSdataby_trackts_3,"Google - Roatmap": layer_GoogleRoatmap_2,"Google - Hybrid": layer_GoogleHybrid_1,"Google - Sattelite": layer_GoogleSattelite_0,},{collapsed:false}).addTo(map);
+        map.on("zoomend", function(){
+
+                if (map.hasLayer(layer_SchoolLocationsShalbyCountry_5)) {
+                    if (map.getZoom() <= 14 && map.getZoom() >= 19) {
+                        layer_SchoolLocationsShalbyCountry_5.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_SchoolLocationsShalbyCountry_5.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        });
+        setBounds();
+        var i = 0;
+        layer_SchoolLocationsShalbyCountry_5.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((exp_label_SchoolLocationsShalbyCountry_5_eval_expression(context) !== null?String('<div style="color: #f2f0ed; font-size: 10pt; font-weight: bold; font-family: \'Open Sans\', sans-serif;">' + exp_label_SchoolLocationsShalbyCountry_5_eval_expression(context)) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_SchoolLocationsShalbyCountry_5'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+                if (map.hasLayer(layer_SchoolLocationsShalbyCountry_5)) {
+                    if (map.getZoom() <= 14 && map.getZoom() >= 19) {
+                        layer_SchoolLocationsShalbyCountry_5.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_SchoolLocationsShalbyCountry_5.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        resetLabels([layer_SchoolLocationsShalbyCountry_5]);
+        map.on("zoomend", function(){
+            resetLabels([layer_SchoolLocationsShalbyCountry_5]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_SchoolLocationsShalbyCountry_5]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_SchoolLocationsShalbyCountry_5]);
+        });
+        </script>
+    </body>
+</html>
